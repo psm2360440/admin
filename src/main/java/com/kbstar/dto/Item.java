@@ -1,5 +1,6 @@
 package com.kbstar.dto;
 
+
 import lombok.*;
 
 import java.util.Date;
@@ -10,10 +11,9 @@ import java.util.Date;
 @Getter
 @ToString
 public class Item {
+    private int id;
     private String name;
-    private String position;
-    private String office;
-    private int age;
-    private Date startdate;
-    private int salary;
+    private int price;
+    private String imgname;
+    private Date rdate;
 }
