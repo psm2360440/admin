@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
     <title>SB Admin 2 - Dashboard</title>
 
@@ -25,6 +26,10 @@
     <!-- Custom styles for this page -->
     <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 
+    <!--kakao-->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f5f154fb7d1604c83c2bdb25d0f4a23c"></script>
+
+
     <!--high chart-->
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/series-label.js"></script>
@@ -35,6 +40,9 @@
     <script src="https://code.highcharts.com/modules/cylinder.js"></script>
     <script src="https://code.highcharts.com/modules/funnel3d.js"></script>
     <script src="https://code.highcharts.com/modules/data.js"></script>
+    <!--websocekt-->
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 
 </head>
 
@@ -105,6 +113,23 @@
             </div>
         </li>
 
+        <!-- Menu for Marker -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#marker_mgt"
+               aria-expanded="true" aria-controls="collapseUtilities">
+                <i class="fas fa-fw fa-wrench"></i>
+                <span>Marker</span>
+            </a>
+            <div id="marker_mgt" class="collapse" aria-labelledby="headingUtilities"
+                 data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Marker Managements:</h6>
+                    <a class="collapse-item" href="/marker/add">ADD</a>
+                    <a class="collapse-item" href="/marker/all">All</a>
+                </div>
+            </div>
+        </li>
+
         <!-- Divider -->
         <hr class="sidebar-divider">
 
@@ -122,14 +147,21 @@
             </a>
             <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
+                    <c:choose>
+                    <c:when test="${loginadm == null}">
                     <h6 class="collapse-header">Login Screens:</h6>
-                    <a class="collapse-item" href="login.html">Login</a>
-                    <a class="collapse-item" href="register.html">Register</a>
-                    <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-                    <div class="collapse-divider"></div>
-                    <h6 class="collapse-header">Other Pages:</h6>
-                    <a class="collapse-item" href="404.html">404 Page</a>
-                    <a class="collapse-item" href="blank.html">Blank Page</a>
+                        <a class="collapse-item" href="/login">Login</a>
+                        <a class="collapse-item" href="/register">Register</a>
+                        <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="collapse-divider"></div>
+                        <h6 class="collapse-header">Other Pages:</h6>
+                        <a class="collapse-item" href="404.html">404 Page</a>
+                        <a class="collapse-item" href="blank.html">Blank Page</a>
+                    </c:otherwise>
+                </c:choose>
+
                 </div>
             </div>
         </li>
@@ -154,6 +186,13 @@
                 <i class="fas fa-fw fa-chart-area"></i>
                 <span>Live Chart</span></a>
         </li>
+        <c:if test = "${loginadm != null}">
+            <li class="nav-item">
+                <a class="nav-link" href="/websocket">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Web Socket</span></a>
+            </li>
+        </c:if>
 
 
         <!-- Divider -->
@@ -397,7 +436,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2021</span>
+                        <span>Copyright &copy; Your Website 2023</span>
                     </div>
                 </div>
             </footer>
@@ -466,6 +505,8 @@
 
     <!-- Page level custom scripts -->
     <script src="/js/demo/datatables-demo.js"></script>
+
+
 </div>
 
 </body>

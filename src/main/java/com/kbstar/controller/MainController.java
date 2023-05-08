@@ -122,6 +122,13 @@ public class MainController {
         return "index";
     }
 
+    @RequestMapping("/websocket")
+    public String websocket(Model model){
+        model.addAttribute("contents", "websocket");
+        return "index";
+    }
+
+
 //    @RequestMapping("/tables")
 //    public String tables(Model model){
 //        List<Item> list = new ArrayList<>();

@@ -1,6 +1,7 @@
 package com.kbstar.service;
 
 import com.kbstar.dto.Item;
+import com.kbstar.dto.ItemSearch;
 import com.kbstar.frame.KBService;
 import com.kbstar.mapper.ItemMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,10 @@ public class ItemService implements KBService<Integer, Item> {
     @Override
     public List<Item> get() throws Exception {
         return mapper.selectall();
+    }
+
+    public List<Item> search(ItemSearch ms) throws Exception{
+        return mapper.search(ms);
     }
 
 }
