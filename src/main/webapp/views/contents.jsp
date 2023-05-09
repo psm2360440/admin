@@ -7,6 +7,43 @@
 <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
 <script>
+    let websocket_center = {
+        stompClient:null,
+        init:function(){
+            this.connect();
+        },
+        connect:function(){
+            var socket = new SockJS('${adminserver}/wss');
+
+            this.stompClient = Stomp.over(socket);
+
+            this.stompClient.connect({}, function(frame) {
+                console.log('Connected: ' + frame);
+
+                this.subscribe('/sendadm', function(msg) {
+                    $('#content1_msg').text(JSON.parse(msg.body).content1);
+                    $('#content2_msg').text(JSON.parse(msg.body).content2);
+                    $('#content3_msg').text(JSON.parse(msg.body).content3);
+                    $('#content4_msg').text(JSON.parse(msg.body).content4);
+
+                    $('#progress1').css('width',(JSON.parse(msg.body).content1)+'%');
+                    $('#progress1').attr('aria-valuenow',JSON.parse(msg.body).content1);
+
+                    $('#progress2').css('width',(JSON.parse(msg.body).content2)/10+'%');
+                    $('#progress2').attr('aria-valuenow',JSON.parse(msg.body).content2/10);
+
+                    $('#progress3').css('width',(JSON.parse(msg.body).content3)/5+'%');
+                    $('#progress3').attr('aria-valuenow',JSON.parse(msg.body).content3/5);
+
+                    $('#progress4').css('width',(JSON.parse(msg.body).content4)*10 +'%');
+                    $('#progress4').attr('aria-valuenow',JSON.parse(msg.body).content4*10);
+
+                });
+            });
+        }
+    };
+
+
     let contents = {
         init: function () {
             contents.getdata1();
@@ -233,6 +270,7 @@
     };
     $(function () {
         contents.init();
+        websocket_center.init();
     })
 </script>
 <div class="container-fluid">
@@ -256,7 +294,14 @@
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Earnings (Monthly)
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                            <div id = "content1_msg" class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                        </div>
+                        <div class="col">
+                            <div class="progress progress-sm mr-2">
+                                <div id = "progress1" class="progress-bar bg-primary" role="progressbar"
+                                     style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                     aria-valuemax="500"></div>
+                            </div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -275,7 +320,14 @@
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Earnings (Annual)
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                            <div id = "content2_msg" class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                        </div>
+                        <div class="col">
+                            <div class="progress progress-sm mr-2">
+                                <div id = "progress2" class="progress-bar bg-success" role="progressbar"
+                                     style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                     aria-valuemax="500"></div>
+                            </div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -295,13 +347,13 @@
                             </div>
                             <div class="row no-gutters align-items-center">
                                 <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                                    <div id = "content3_msg" class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
                                 </div>
                                 <div class="col">
                                     <div class="progress progress-sm mr-2">
-                                        <div class="progress-bar bg-info" role="progressbar"
+                                        <div id = "progress3" class="progress-bar bg-info" role="progressbar"
                                              style="width: 50%" aria-valuenow="50" aria-valuemin="0"
-                                             aria-valuemax="100"></div>
+                                             aria-valuemax="500"></div>
                                     </div>
                                 </div>
                             </div>
@@ -323,7 +375,14 @@
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                 Pending Requests
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                            <div id = "content4_msg" class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                        </div>
+                        <div class="col">
+                            <div class="progress progress-sm mr-2">
+                                <div id = "progress4" class="progress-bar bg-warning" role="progressbar"
+                                     style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                     aria-valuemax="500"></div>
+                            </div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-comments fa-2x text-gray-300"></i>

@@ -49,4 +49,13 @@ public class CartService implements KBService<Integer, Cart> {
     public List<Cart> get() throws Exception {
         return mapper.selectall();
     }
+
+    public Integer countCart() throws Exception{
+        return mapper.countCart();
+    }
+
+    public Integer countPrice() throws Exception{
+        return mapper.countPrice();
+    }
+
 }

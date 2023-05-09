@@ -26,7 +26,7 @@
     </appender>
     <!--log for static/log -->
     <appender name="FILE2" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOGS_DIR}/custinfo.log</file>
+        <file>${LOGS_DIR}/cartinfo.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss}, %msg%n</pattern>
         </encoder>
@@ -50,7 +50,7 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.kbstar.controller.CustController" level="INFO">
+    <logger name="com.kbstar.controller.ScheduleController" level="INFO">
         <appender-ref ref="FILE2"/>
     </logger>
 

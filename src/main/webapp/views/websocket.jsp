@@ -50,7 +50,7 @@
         },
         connect:function(){
             var sid = this.id;
-            var socket = new SockJS('http://127.0.0.1:8088/ws');
+            var socket = new SockJS('${adminserver}/ws');
             //websocket의 접속정보
             this.stompClient = Stomp.over(socket);
 

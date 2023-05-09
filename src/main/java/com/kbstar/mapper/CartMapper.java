@@ -12,4 +12,8 @@ import java.util.List;
 public interface CartMapper extends KBMapper<Integer, Cart> {
 
     public List<Cart> getmycart(String cid);
+
+    public Integer countCart();
+
+    public Integer countPrice();
 }
