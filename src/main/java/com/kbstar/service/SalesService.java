@@ -45,4 +45,24 @@ public class SalesService implements KBService<String, Sales> {
     public List<Sales> get() throws Exception {
         return mapper.selectall();
     }
+
+    public List<Integer> Mtotal() throws Exception{
+        return mapper.Mtotal();
+    }
+
+    public List<Integer> Ftotal() throws Exception{
+        return mapper.Ftotal();
+    }
+
+    public Integer Msum() throws Exception {
+        return mapper.Msum();
+    }
+
+    public Integer Fsum() throws Exception {
+        return mapper.Fsum();
+    }
+
+    public List<Integer> AverageByGender() throws Exception {
+        return mapper.AverageByGender();
+    }
 }

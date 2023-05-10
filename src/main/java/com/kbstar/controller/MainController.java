@@ -124,7 +124,7 @@ public class MainController {
 
     @RequestMapping("/dashboard")
     public String dashboard(Model model){
-        model.addAttribute("contents", "contents");
+        model.addAttribute("contents", "dashboard");
         return "index";
     }
 

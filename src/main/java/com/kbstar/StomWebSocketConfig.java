@@ -11,7 +11,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 public class StomWebSocketConfig implements WebSocketMessageBrokerConfigurer{
 
-    @Value("${serviceserver")
+    @Value("${serviceserver}")
     String serviceServer;
 
     @Override

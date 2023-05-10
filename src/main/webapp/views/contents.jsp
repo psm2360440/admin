@@ -8,37 +8,140 @@
 
 <script>
     let websocket_center = {
-        stompClient:null,
-        init:function(){
+        stompClient: null,
+        init: function () {
             this.connect();
         },
-        connect:function(){
+        connect: function () {
             var socket = new SockJS('${adminserver}/wss');
 
             this.stompClient = Stomp.over(socket);
 
-            this.stompClient.connect({}, function(frame) {
+            this.stompClient.connect({}, function (frame) {
                 console.log('Connected: ' + frame);
 
-                this.subscribe('/sendadm', function(msg) {
+                this.subscribe('/sendadm', function (msg) {
                     $('#content1_msg').text(JSON.parse(msg.body).content1);
                     $('#content2_msg').text(JSON.parse(msg.body).content2);
                     $('#content3_msg').text(JSON.parse(msg.body).content3);
                     $('#content4_msg').text(JSON.parse(msg.body).content4);
 
-                    $('#progress1').css('width',(JSON.parse(msg.body).content1)+'%');
-                    $('#progress1').attr('aria-valuenow',JSON.parse(msg.body).content1);
+                    $('#progress1').css('width', (JSON.parse(msg.body).content1) + '%');
+                    $('#progress1').attr('aria-valuenow', JSON.parse(msg.body).content1);
 
-                    $('#progress2').css('width',(JSON.parse(msg.body).content2)/10+'%');
-                    $('#progress2').attr('aria-valuenow',JSON.parse(msg.body).content2/10);
+                    $('#progress2').css('width', (JSON.parse(msg.body).content2) / 10 + '%');
+                    $('#progress2').attr('aria-valuenow', JSON.parse(msg.body).content2 / 10);
 
-                    $('#progress3').css('width',(JSON.parse(msg.body).content3)/5+'%');
-                    $('#progress3').attr('aria-valuenow',JSON.parse(msg.body).content3/5);
+                    $('#progress3').css('width', (JSON.parse(msg.body).content3) / 5 + '%');
+                    $('#progress3').attr('aria-valuenow', JSON.parse(msg.body).content3 / 5);
 
-                    $('#progress4').css('width',(JSON.parse(msg.body).content4)*10 +'%');
-                    $('#progress4').attr('aria-valuenow',JSON.parse(msg.body).content4*10);
+                    $('#progress4').css('width', (JSON.parse(msg.body).content4) * 10 + '%');
+                    $('#progress4').attr('aria-valuenow', JSON.parse(msg.body).content4 * 10);
 
                 });
+            });
+        }
+    };
+
+    let center_chart1 = {
+        init: function() {
+            $.ajax({
+               url:'/chart1',
+               success: function(data){
+                   center_chart1.display(data);
+               }
+            });
+        },
+        display: function(data){
+            Highcharts.chart('container1', {
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: 'Monthly Average Temperature'
+                },
+                subtitle: {
+                    text: 'Source: ' +
+                        '<a href="https://en.wikipedia.org/wiki/List_of_cities_by_average_temperature" ' +
+                        'target="_blank">Wikipedia.com</a>'
+                },
+                xAxis: {
+                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct']
+                },
+                yAxis: {
+                    title: {
+                        text: 'Temperature (°C)'
+                    }
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: true
+                        },
+                        enableMouseTracking: false
+                    }
+                },
+                series: data
+            });
+        }
+    };
+
+    let center_chart2 = {
+        init: function() {
+            $.ajax({
+                url:'/chart1',
+                success: function(data){
+                    center_chart2.display(data);
+                }
+            });
+        },
+        display: function(data){
+            Highcharts.chart('container2', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Monthly Average Rainfall'
+                },
+                subtitle: {
+                    text: 'Source: WorldClimate.com'
+                },
+                xAxis: {
+                    categories: [
+                        'Jan',
+                        'Feb',
+                        'Mar',
+                        'Apr',
+                        'May',
+                        'Jun',
+                        'Jul',
+                        'Aug',
+                        'Sep',
+                        'Oct'
+                    ],
+                    crosshair: true
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Rainfall (mm)'
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                        '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+                    footerFormat: '</table>',
+                    shared: true,
+                    useHTML: true
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                series: data
             });
         }
     };
@@ -49,228 +152,501 @@
             contents.getdata1();
             contents.getdata2();
             contents.getdata3();
-            setInterval(contents.getdata, 1000);
+            contents.getdata4();
+            contents.getdata5();
+            contents.getdata6();
+            contents.getdata7();
+            setInterval(contents.getdata, 500);
         },
         getdata1: function () {
             $.ajax({
-                url: '/custom1',
+                url: '/mainchart1',
                 success: function (data) {
                     contents.display1(data);
                 }
-            });
+            })
         },
-        getdata2: function(){
+        getdata2: function () {
             $.ajax({
-                url: '/custom2',
-                success: function(data){
+                url: '/mainchart2',
+                success: function (data) {
                     contents.display2(data);
                 }
-            });
+            })
         },
-        getdata3: function(){
+        getdata3: function () {
             $.ajax({
-                url:'/custom3',
-                success: function(data){
+                url: '/mainchart3',
+                success: function (data) {
                     contents.display3(data);
+                }
+            })
+        },
+        getdata4: function () {
+            $.ajax({
+                url: '/mainchart4',
+                success: function (data) {
+                    contents.display4(data);
+                }
+            })
+        },
+        getdata5: function () {
+            $.ajax({
+                url: '/mainchart5',
+                success: function (data) {
+                    contents.display5(data);
+                }
+            })
+        },
+        getdata6: function () {
+            $.ajax({
+                url: '/mainchart6',
+                success: function (data) {
+                    contents.display6(data);
+                }
+            })
+        },
+        getdata7: function () {
+            $.ajax({
+                url: '/mainchart7',
+                success: function (data) {
+                    contents.display7(data);
+                }
+            })
+        },
+        display7: function (data) {
+            $('#jan').text(((data.Msales[0]+data.Fsales[0])/15000).toFixed(2) + '%');
+            $('#feb').text(((data.Msales[1]+data.Fsales[1])/15000).toFixed(2) + '%');
+            $('#mar').text(((data.Msales[2]+data.Fsales[2])/15000).toFixed(2) + '%');
+            $('#apr').text(((data.Msales[3]+data.Fsales[3])/15000).toFixed(2) + '%');
+            $('#may').text(((data.Msales[4]+data.Fsales[4])/15000).toFixed(2) + '%');
+            $('#jun').text(((data.Msales[5]+data.Fsales[5])/15000).toFixed(2) + '%');
+            $('#jul').text(((data.Msales[6]+data.Fsales[6])/15000).toFixed(2) + '%');
+            $('#aug').text(((data.Msales[7]+data.Fsales[7])/15000).toFixed(2) + '%');
+
+            $('#jan_pro').css('width', ((data.Msales[0]+data.Fsales[0])/15000).toFixed(2) + '%');
+            $('#jan_pro').html(((data.Msales[0]+data.Fsales[0])/15000).toFixed(2) + '%');
+            $('#jan_pro').attr('aria-valuenow', (data.Msales[0]+data.Fsales[0])/15000);
+
+            $('#feb_pro').css('width', ((data.Msales[1]+data.Fsales[1])/15000).toFixed(2) + '%');
+            $('#feb_pro').html(((data.Msales[1]+data.Fsales[1])/15000).toFixed(2) + '%');
+            $('#feb_pro').attr('aria-valuenow', (data.Msales[1]+data.Fsales[1])/15000);
+
+            $('#mar_pro').css('width', ((data.Msales[2]+data.Fsales[2])/15000).toFixed(2) + '%');
+            $('#mar_pro').html(((data.Msales[2]+data.Fsales[2])/15000).toFixed(2) + '%');
+            $('#mar_pro').attr('aria-valuenow', (data.Msales[2]+data.Fsales[2])/15000);
+
+            $('#apr_pro').css('width', ((data.Msales[3]+data.Fsales[3])/15000).toFixed(2) + '%');
+            $('#apr_pro').html(((data.Msales[3]+data.Fsales[3])/15000).toFixed(2) + '%');
+            $('#apr_pro').attr('aria-valuenow', (data.Msales[3]+data.Fsales[3])/15000);
+
+            $('#may_pro').css('width', ((data.Msales[4]+data.Fsales[4])/15000).toFixed(2) + '%');
+            $('#may_pro').html(((data.Msales[4]+data.Fsales[4])/15000).toFixed(2) + '%');
+            $('#may_pro').attr('aria-valuenow', (data.Msales[4]+data.Fsales[4])/15000);
+
+            $('#jun_pro').css('width', ((data.Msales[5]+data.Fsales[5])/15000).toFixed(2) + '%');
+            $('#jun_pro').html(((data.Msales[5]+data.Fsales[5])/15000).toFixed(2) + '%');
+            $('#jun_pro').attr('aria-valuenow', (data.Msales[5]+data.Fsales[5])/15000);
+
+            $('#jul_pro').css('width', ((data.Msales[6]+data.Fsales[6])/15000).toFixed(2) + '%');
+            $('#jul_pro').html(((data.Msales[6]+data.Fsales[6])/15000).toFixed(2) + '%');
+            $('#jul_pro').attr('aria-valuenow', (data.Msales[6]+data.Fsales[6])/15000);
+
+            $('#aug_pro').css('width', ((data.Msales[7]+data.Fsales[7])/15000).toFixed(2) + '%');
+            $('#aug_pro').html(((data.Msales[7]+data.Fsales[7])/15000).toFixed(2) + '%');
+            $('#aug_pro').attr('aria-valuenow', (data.Msales[7]+data.Fsales[7])/15000);
+        },
+        display6: function (data) {
+            var colors = Highcharts.getOptions().colors,
+                categories = [
+                    'Female',
+                    'Male'
+                ],
+
+                data = [
+                    {
+                        y: data.Fsum / (data.Msum + data.Fsum) * 100,
+                        color: colors[5],
+                        drilldown: {
+                            name: 'Female',
+                            categories: data.cate,
+                            data: data.Fsales
+                        }
+                    },
+                    {
+                        y:data.Msum / (data.Msum + data.Fsum) * 100,
+                        color: colors[1],
+                        drilldown: {
+                            name: 'Male',
+                            categories: data.cate,
+                            data: data.Msales
+                        }
+                    }
+                ],
+                browserData = [],
+                versionsData = [],
+                i,
+                j,
+                dataLen = data.length,
+                drillDataLen,
+                brightness;
+
+
+// Build the data arrays
+            for (i = 0; i < dataLen; i += 1) {
+
+                // add browser data
+                browserData.push({
+                    name: categories[i],
+                    y: data[i].y,
+                    color: data[i].color
+                });
+
+                // add version data
+                drillDataLen = data[i].drilldown.data.length;
+                for (j = 0; j < drillDataLen; j += 1) {
+                    brightness = 0.2 - (j / drillDataLen) / 5;
+                    versionsData.push({
+                        name: data[i].drilldown.categories[j],
+                        y: data[i].drilldown.data[j],
+                        color: Highcharts.color(data[i].color).brighten(brightness).get()
+                    });
+                }
+            }
+
+// Create the chart
+            Highcharts.chart('custom9', {
+                chart: {
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Donut Chart For Monthly Records',
+                    align: 'left'
+                },
+                subtitle: {
+                    text: 'Source: <a href="http://172.16.21.53" target="_blank">www.digicampus-shop.com</a>',
+                    align: 'left'
+                },
+                plotOptions: {
+                    pie: {
+                        shadow: false,
+                        center: ['50%', '50%']
+                    }
+                },
+                tooltip: {
+                    valueSuffix: '%'
+                },
+                series: [{
+                    name: 'Group',
+                    data: browserData,
+                    size: '60%',
+                    dataLabels: {
+                        formatter: function () {
+                            return this.y > 5 ? this.point.name : null;
+                        },
+                        color: '#ffffff',
+                        distance: -30
+                    }
+                }, {
+                    name: 'Month',
+                    data: versionsData,
+                    size: '80%',
+                    innerSize: '60%',
+                    dataLabels: {
+                        formatter: function () {
+                            // display only if larger than 1
+                            return this.y > 1 ? '<b>' + this.point.name + ':</b> ' +
+                                this.y + '원' : null;
+                        }
+                    },
+                    id: 'versions'
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 400
+                        },
+                        chartOptions: {
+                            series: [{}, {
+                                id: 'versions',
+                                dataLabels: {
+                                    enabled: false
+                                }
+                            }]
+                        }
+                    }]
                 }
             });
         },
-        display3: function(data){
-            Highcharts.chart('custom3', {
+        display5: function (data) {
+            Highcharts.chart('custom8', {
                 chart: {
-                    type: 'funnel3d',
-                    options3d: {
-                        enabled: true,
-                        alpha: 10,
-                        depth: 50,
-                        viewDistance: 50
-                    }
-                },
-                title: {
-                    text: 'Highcharts Funnel3D Chart'
-                },
-                accessibility: {
-                    screenReaderSection: {
-                        beforeChartFormat: '<{headingTagName}>{chartTitle}</{headingTagName}><div>{typeDescription}</div><div>{chartSubtitle}</div><div>{chartLongdesc}</div>'
-                    }
-                },
-                plotOptions: {
-                    series: {
-                        dataLabels: {
-                            enabled: true,
-                            format: '<b>{point.name}</b> ({point.y:,.0f})',
-                            allowOverlap: true,
-                            y: 10
-                        },
-                        neckWidth: '30%',
-                        neckHeight: '25%',
-                        width: '80%',
-                        height: '80%'
-                    }
-                },
-                series: [{
-                    name: 'Unique users',
-                    data: data
-                }]
-            });
-        },
-        display2: function(data){
-            Highcharts.chart('custom2', {
-                chart: {
-                    type: 'column',
-                    options3d: {
-                        enabled: true,
-                        alpha: 15,
-                        beta: 15,
-                        viewDistance: 25,
-                        depth: 40
-                    }
+                    type: 'bubble',
+                    plotBorderWidth: 1,
+                    zoomType: 'xy'
                 },
 
                 title: {
-                    text: 'DigiCampus Programming Achievement Result',
+                    text: 'Sales Records 2022 1月 - 8月 (단위: 만원)',
                     align: 'left'
                 },
 
                 xAxis: {
-                    labels: {
-                        skew3d: true,
-                        style: {
-                            fontSize: '16px'
-                        }
+                    gridLineWidth: 1,
+                    accessibility: {
+                        rangeDescription: 'Range: 0 to 9.'
                     }
                 },
 
                 yAxis: {
-                    allowDecimals: false,
-                    min: 0,
-                    title: {
-                        text: 'score',
-                        skew3d: true,
-                        style: {
-                            fontSize: '16px'
-                        }
+                    startOnTick: false,
+                    endOnTick: false,
+                    accessibility: {
+                        rangeDescription: 'Range: 0 to 100.'
                     }
                 },
-
-                tooltip: {
-                    headerFormat: '<b>{point.key}</b><br>',
-                    pointFormat: '<span style="color:{series.color}">\u25CF</span> {series.name}: {point.y} / {point.stackTotal}'
-                },
-
-                plotOptions: {
-                    series: {
-                        pointStart: 2023
-                    },
-                    column: {
-                        stacking: 'normal',
-                        depth: 40
-                    }
-                },
-
-
 
                 series: [{
-                    name: 'Daeho Lee',
-                    data: data.first,
-                    stack: 'Male'
+                    name: 'Male',
+                    data: data.Msales,
+                    marker: {
+                        fillColor: {
+                            radialGradient: {cx: 0.4, cy: 0.3, r: 0.7},
+                            stops: [
+                                [0, 'rgba(255,255,255,0.5)'],
+                                [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0.5).get('rgba')]
+                            ]
+                        }
+                    }
                 }, {
-                    name: 'Jinhee Kim',
-                    data: data.second,
-                    stack: 'Female'
-                }, {
-                    name: 'Myeonghyeon Heo',
-                    data: data.third,
-                    stack: 'Male'
-                }, {
-                    name: 'Sunmi Park',
-                    data: data.fourth,
-                    stack: 'Female'
+                    name: 'Female',
+                    data: data.Fsales,
+                    marker: {
+                        fillColor: {
+                            radialGradient: {cx: 0.4, cy: 0.3, r: 0.7},
+                            stops: [
+                                [0, 'rgba(255,255,255,0.5)'],
+                                [1, Highcharts.color(Highcharts.getOptions().colors[1]).setOpacity(0.5).get('rgba')]
+                            ]
+                        }
+                    }
                 }]
             });
-
         },
-        display1: function (data) {
-            var chart = Highcharts.chart('custom1', {
+        display4: function (data) {
+            Highcharts.chart('custom7', {
                 chart: {
-                    type: 'column'
+                    type: 'packedbubble',
+                    height: '55%'
                 },
-
                 title: {
-                    text: 'Yearly Best Awards'
+                    text: 'Bubble Chart For Digicam Shoppingmall Sales Records',
+                    align: 'left'
                 },
-
-                subtitle: {
-                    text: 'Resize the frame or click buttons to change appearance'
+                tooltip: {
+                    useHTML: true,
+                    pointFormat: '{point.value}원'
                 },
-
-                legend: {
-                    align: 'right',
-                    verticalAlign: 'middle',
-                    layout: 'vertical'
-                },
-
-                xAxis: {
-                    categories: data.category,
-                    labels: {
-                        x: -10
-                    }
-                },
-
-                yAxis: {
-                    allowDecimals: false,
-                    title: {
-                        text: 'Amount'
-                    }
-                },
-
-                series: [{
-                    name: 'Sunmi Park',
-                    data: data.datas
-                }, {
-                    name: 'Jinhee Kim',
-                    data: data.datas2
-                }, {
-                    name: 'Seongyoung Lee',
-                    data: data.datas3
-                }],
-
-                responsive: {
-                    rules: [{
-                        condition: {
-                            maxWidth: 500
+                plotOptions: {
+                    packedbubble: {
+                        minSize: '20%',
+                        maxSize: '100%',
+                        zMin: 0,
+                        zMax: 10000000,
+                        layoutAlgorithm: {
+                            gravitationalConstant: 0.05,
+                            splitSeries: true,
+                            seriesInteraction: false,
+                            dragBetweenSeries: true,
+                            parentNodeLimit: true
                         },
-                        chartOptions: {
-                            legend: {
-                                align: 'center',
-                                verticalAlign: 'bottom',
-                                layout: 'horizontal'
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.name}',
+                            filter: {
+                                property: 'y',
+                                operator: '>',
+                                value: 250
                             },
-                            yAxis: {
-                                labels: {
-                                    align: 'left',
-                                    x: 0,
-                                    y: -5
-                                },
-                                title: {
-                                    text: null
-                                }
-                            },
-                            subtitle: {
-                                text: null
-                            },
-                            credits: {
-                                enabled: false
+                            style: {
+                                color: 'black',
+                                textOutline: 'none',
+                                fontWeight: 'normal'
                             }
                         }
-                    }]
-                }
+                    }
+                },
+                series: [{
+                    name: 'Male',
+                    data: data.Msales,
+                }, {
+                    name: 'Female',
+                    data: data.Fsales
+                }]
+            })
+        },
+        display3: function (data) {
+            Highcharts.chart('custom6', {
+                title: {
+                    text: 'Digicam Shoppingmall Sales Records',
+                    align: 'left'
+                },
+                xAxis: {
+                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug']
+                },
+                yAxis: {
+                    title: {
+                        text: 'SUM PRICE'
+                    }
+                },
+                tooltip: {
+                    valueSuffix: '원(KRW)'
+                },
+                plotOptions: {
+                    series: {
+                        borderRadius: '25%'
+                    }
+                },
+                series: [{
+                    type: 'column',
+                    name: 'Male',
+                    data: data.Msales
+                }, {
+                    type: 'column',
+                    name: 'Female',
+                    data: data.Fsales
+                }, {
+                    type: 'spline',
+                    name: 'Average by Gender',
+                    data: data.Avg,
+                    marker: {
+                        lineWidth: 2,
+                        lineColor: Highcharts.getOptions().colors[3],
+                        fillColor: 'white'
+                    }
+                }, {
+                    type: 'pie',
+                    name: 'Total',
+                    data: [{
+                        name: 'Male',
+                        y: data.Msum,
+                        color: Highcharts.getOptions().colors[0], // 2020 color
+                        dataLabels: {
+                            enabled: true,
+                            distance: -50,
+                            format: '{point.total} 원',
+                            style: {
+                                fontSize: '15px'
+                            }
+                        }
+                    }, {
+                        name: 'Female',
+                        y: data.Fsum,
+                        color: Highcharts.getOptions().colors[1] // 2021 color
+                    }],
+                    center: [75, 65],
+                    size: 100,
+                    innerSize: '70%',
+                    showInLegend: false,
+                    dataLabels: {
+                        enabled: false
+                    }
+                }]
+            });
+        },
+        display2: function (data) {
+            Highcharts.chart('custom5', {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+                title: {
+                    text: 'Female<br>Group<br>',
+                    align: 'center',
+                    verticalAlign: 'middle',
+                    y: 60
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        dataLabels: {
+                            enabled: true,
+                            distance: -50,
+                            style: {
+                                fontWeight: 'bold',
+                                color: 'white'
+                            }
+                        },
+                        startAngle: -90,
+                        endAngle: 90,
+                        center: ['50%', '75%'],
+                        size: '110%'
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: 'Sales Share',
+                    innerSize: '50%',
+                    data: data
+                }]
+            });
+        },
+        display1: function (data) {
+            Highcharts.chart('custom4', {
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: 'Monthly Sum Sales Records'
+                },
+                subtitle: {
+                    text: 'Source: ' +
+                        '<a href="http://172.16.21.53" ' +
+                        'target="_blank">www.digicampus-shop.com</a>'
+                },
+                xAxis: {
+                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug']
+                },
+                yAxis: {
+                    title: {
+                        text: '원(KRW)'
+                    }
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: true
+                        },
+                        enableMouseTracking: false
+                    }
+                },
+                series: [{
+                    name: 'Male',
+                    data: data.Msales
+                }, {
+                    name: 'Female',
+                    data: data.Fsales
+                }]
             });
         }
     };
     $(function () {
         contents.init();
         websocket_center.init();
+        center_chart1.init();
+        center_chart2.init();
+
+        setInterval(center_chart1.init, 5000);
+        setInterval(center_chart2.init, 5000);
+        setInterval(contents.init, 5000);
     })
 </script>
 <div class="container-fluid">
@@ -282,7 +658,7 @@
                 class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
     </div>
 
-    <!-- Content Row -->
+    <!-- Content Row1 Start-->
     <div class="row">
 
         <!-- Earnings (Monthly) Card Example -->
@@ -294,11 +670,11 @@
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Earnings (Monthly)
                             </div>
-                            <div id = "content1_msg" class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                            <div id="content1_msg" class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
                         </div>
                         <div class="col">
                             <div class="progress progress-sm mr-2">
-                                <div id = "progress1" class="progress-bar bg-primary" role="progressbar"
+                                <div id="progress1" class="progress-bar bg-primary" role="progressbar"
                                      style="width: 50%" aria-valuenow="50" aria-valuemin="0"
                                      aria-valuemax="500"></div>
                             </div>
@@ -320,11 +696,11 @@
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Earnings (Annual)
                             </div>
-                            <div id = "content2_msg" class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                            <div id="content2_msg" class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
                         </div>
                         <div class="col">
                             <div class="progress progress-sm mr-2">
-                                <div id = "progress2" class="progress-bar bg-success" role="progressbar"
+                                <div id="progress2" class="progress-bar bg-success" role="progressbar"
                                      style="width: 50%" aria-valuenow="50" aria-valuemin="0"
                                      aria-valuemax="500"></div>
                             </div>
@@ -347,11 +723,11 @@
                             </div>
                             <div class="row no-gutters align-items-center">
                                 <div class="col-auto">
-                                    <div id = "content3_msg" class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                                    <div id="content3_msg" class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
                                 </div>
                                 <div class="col">
                                     <div class="progress progress-sm mr-2">
-                                        <div id = "progress3" class="progress-bar bg-info" role="progressbar"
+                                        <div id="progress3" class="progress-bar bg-info" role="progressbar"
                                              style="width: 50%" aria-valuenow="50" aria-valuemin="0"
                                              aria-valuemax="500"></div>
                                     </div>
@@ -375,11 +751,11 @@
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                 Pending Requests
                             </div>
-                            <div id = "content4_msg" class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                            <div id="content4_msg" class="h5 mb-0 font-weight-bold text-gray-800">18</div>
                         </div>
                         <div class="col">
                             <div class="progress progress-sm mr-2">
-                                <div id = "progress4" class="progress-bar bg-warning" role="progressbar"
+                                <div id="progress4" class="progress-bar bg-warning" role="progressbar"
                                      style="width: 50%" aria-valuenow="50" aria-valuemin="0"
                                      aria-valuemax="500"></div>
                             </div>
@@ -392,233 +768,167 @@
             </div>
         </div>
     </div>
+    <!-- Content Row1 End-->
 
-    <!-- Content Row -->
-    <!-- Area Chart -->
+    <!-- Content Row2 Start-->
     <div class="row">
-
-        <!-- Area Chart -->
-        <div class="col-xl-8 col-lg-7">
+        <div class="col-xl-8 col-lg-7 mb-4">
             <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Best Employee</h6>
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Monthly Sales Chart</h6>
                 </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                    <div id="container">
-                        <div class="chart-area" id="custom1"></div>
-                    </div>
+                <div class="card-body col mr-8">
+                    <div class="chart-area" id="custom6"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Pie Chart -->
-        <div class="col-xl-4 col-lg-7">
+        <div class="col-xl-4">
             <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div
-                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">MBTI RATIO</h6>
-                    <div class="dropdown no-arrow">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                             aria-labelledby="dropdownMenuLink">
-                            <div class="dropdown-header">Dropdown Header:</div>
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </div>
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Donut Chart For Monthly Records</h6>
                 </div>
-                <!-- Card Body -->
                 <div class="card-body">
-                    <div class="chart-pie pt-4 pb-2">
-                        <div id="container3">
-                            <div class="chart-area" id="custom3"></div>
-                        </div>
-                    </div>
-                    <div class="mt-4 text-center small">
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-5 col-lg-7">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">DIGI CAM 1Team</h6>
-                </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                    <div id="container2">
-                        <div class="chart-area" id="custom2"></div>
-                    </div>
+                    <div class="chart-area" id="custom9"></div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Charts End -->
+    <!-- Content Row2 End-->
 
-    <!-- Content Row -->
+    <!-- Content Row3 Start-->
     <div class="row">
-
-        <!-- Content Column -->
-        <div class="col-lg-6 mb-4">
-
-            <!-- Project Card Example -->
+        <div class="col-xl-8">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Monthly Sales Chart</h6>
                 </div>
-                <div class="card-body">
-                    <h4 class="small font-weight-bold">Server Migration <span
-                            class="float-right">20%</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar bg-danger" role="progressbar" style="width: 20%"
-                             aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <h4 class="small font-weight-bold">Sales Tracking <span
-                            class="float-right">40%</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: 40%"
-                             aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <h4 class="small font-weight-bold">Customer Database <span
-                            class="float-right">60%</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar" role="progressbar" style="width: 60%"
-                             aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <h4 class="small font-weight-bold">Payout Details <span
-                            class="float-right">80%</span></h4>
-                    <div class="progress mb-4">
-                        <div class="progress-bar bg-info" role="progressbar" style="width: 80%"
-                             aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <h4 class="small font-weight-bold">Account Setup <span
-                            class="float-right">Complete!</span></h4>
-                    <div class="progress">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%"
-                             aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
+                <div class="card-body col mr-8">
+                    <div class="chart-area" id="custom4"></div>
                 </div>
             </div>
-
-            <!-- Color System -->
-            <div class="row">
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-primary text-white shadow">
-                        <div class="card-body">
-                            Primary
-                            <div class="text-white-50 small">#4e73df</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-success text-white shadow">
-                        <div class="card-body">
-                            Success
-                            <div class="text-white-50 small">#1cc88a</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-info text-white shadow">
-                        <div class="card-body">
-                            Info
-                            <div class="text-white-50 small">#36b9cc</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-warning text-white shadow">
-                        <div class="card-body">
-                            Warning
-                            <div class="text-white-50 small">#f6c23e</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-danger text-white shadow">
-                        <div class="card-body">
-                            Danger
-                            <div class="text-white-50 small">#e74a3b</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-secondary text-white shadow">
-                        <div class="card-body">
-                            Secondary
-                            <div class="text-white-50 small">#858796</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-light text-black shadow">
-                        <div class="card-body">
-                            Light
-                            <div class="text-black-50 small">#f8f9fc</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="card bg-dark text-white shadow">
-                        <div class="card-body">
-                            Dark
-                            <div class="text-white-50 small">#5a5c69</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        <div class="col-lg-6 mb-4">
-
-            <!-- Illustrations -->
+        <div class="col-xl-4">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Monthly Share (Female)</h6>
                 </div>
                 <div class="card-body">
-                    <div class="text-center">
-                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
-                             src="img/undraw_posting_photo.svg" alt="...">
-                    </div>
-                    <p>Add some quality, svg illustrations to your project courtesy of <a
-                            target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a
-                        constantly updated collection of beautiful svg images that you can use
-                        completely free and without attribution!</p>
-                    <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
-                        unDraw &rarr;</a>
+                    <div class="chart-area" id="custom5"></div>
                 </div>
             </div>
-
-            <!-- Approach -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
-                </div>
-                <div class="card-body">
-                    <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                        CSS bloat and poor page performance. Custom CSS classes are used to create
-                        custom components and custom utility classes.</p>
-                    <p class="mb-0">Before working with this theme, you should become familiar with the
-                        Bootstrap framework, especially the utility classes.</p>
-                </div>
-            </div>
-
         </div>
     </div>
+    <!-- Content Row3 End-->
+
+    <!-- Content Row4 Start-->
+    <div class="row">
+        <div class="col-xl-6 col-lg-5 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Bubble Chart For Digicam Shoppingmall Sales
+                        Records</h6>
+                </div>
+                <div class="card-body col mr-8">
+                    <div class="chart-area" id="custom7" style="height: 400px"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-lg-5 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Sales Records 2022 1月 - 8月 (단위: 만원)</h6>
+                </div>
+                <div class="card-body col mr-8">
+                    <div class="chart-area" id="custom8" style="height: 400px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content Row4 End-->
+
+    <!-- Content Row5 Start-->
+    <div class="row">
+        <div class="col-xl-6 col-lg-5 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Chart with Manni1</h6>
+                </div>
+                <div class="card-body col mr-8">
+                    <div class="chart-area" id="container1" style="height: 400px"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6 col-lg-5 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Chart with Manni2</h6>
+                </div>
+                <div class="card-body col mr-8">
+                    <div class="chart-area" id="container2" style="height: 400px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content Row5 End-->
+
+    <!-- Content Row6 Start-->
+    <div class="row">
+        <!--Progress Bar with Sales Table-->
+        <div class="col-xl-12 col-lg-11 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Sales Achievement Rate</h6>
+                </div>
+                <div class="card-body">
+                    <h4 class="small font-weight-bold">1월<span id = "jan" class="float-right"></span></h4>
+                    <div class="progress mb-4">
+                        <div id = "jan_pro" class="progress-bar bg-danger" role="progressbar" style="width: 20%"
+                             aria-valuenow="" aria-valuemin="0" aria-valuemax="1500000"></div>
+                    </div>
+                    <h4 class="small font-weight-bold">2월<span id = "feb" class="float-right"></span></h4>
+                    <div class="progress mb-4">
+                        <div id = "feb_pro"class="progress-bar bg-warning" role="progressbar" style="width: 40%"
+                             aria-valuenow="" aria-valuemin="0" aria-valuemax="1500000"></div>
+                    </div>
+                    <h4 class="small font-weight-bold">3월<span id = "mar" class="float-right"></span></h4>
+                    <div class="progress mb-4">
+                        <div id = "mar_pro" class="progress-bar" role="progressbar" style="width: 60%"
+                             aria-valuenow="" aria-valuemin="0" aria-valuemax="1500000"></div>
+                    </div>
+                    <h4 class="small font-weight-bold">4월<span id = "apr" class="float-right"></span></h4>
+                    <div class="progress mb-4">
+                        <div id = "apr_pro" class="progress-bar bg-info" role="progressbar" style="width: 80%"
+                             aria-valuenow="" aria-valuemin="0" aria-valuemax="1500000"></div>
+                    </div>
+                    <h4 class="small font-weight-bold">5월<span id = "may" class="float-right"></span></h4>
+                    <div class="progress mb-4">
+                        <div id = "may_pro" class="progress-bar bg-success" role="progressbar" style="width: 100%"
+                             aria-valuenow="" aria-valuemin="0" aria-valuemax="1500000"></div>
+                    </div>
+                    <h4 class="small font-weight-bold">6월<span id = "jun" class="float-right"></span></h4>
+                    <div class="progress mb-4">
+                        <div id = "jun_pro" class="progress-bar bg-dark" role="progressbar" style="width: 100%"
+                             aria-valuenow="" aria-valuemin="0" aria-valuemax="1500000"></div>
+                    </div>
+                    <h4 class="small font-weight-bold">7월<span id = "jul" class="float-right"></span></h4>
+                    <div class="progress mb-4">
+                        <div id = "jul_pro" class="progress-bar bg-gradient-warning" role="progressbar" style="width: 100%"
+                             aria-valuenow="" aria-valuemin="0" aria-valuemax="1500000"></div>
+                    </div>
+                    <h4 class="small font-weight-bold">8월<span id = "aug" class="float-right"></span></h4>
+                    <div class="progress mb-4">
+                        <div id = "aug_pro" class="progress-bar bg-gradient-primary" role="progressbar" style="width: 100%"
+                             aria-valuenow="" aria-valuemin="0" aria-valuemax="1500000"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- Content Row6 End-->
 
 </div>
 <!-- /.container-fluid -->
-
-</div>

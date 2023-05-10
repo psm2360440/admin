@@ -10,4 +10,33 @@
     <insert id="insert" parameterType="sales">
         INSERT INTO sales VALUES (TO_DATE(#{rdate},'YYYY-MM-DD'), #{price}, #{gender})
     </insert>
+
+    <select id="Mtotal" resultType="Integer">
+        SELECT SUM(price) FROM sales WHERE gender = 'M'
+        GROUP BY TO_CHAR(rdate,'yyyy-mm')
+        ORDER BY TO_CHAR(rdate,'yyyy-mm')
+    </select>
+
+    <select id="Ftotal" resultType="Integer">
+        SELECT SUM(price) FROM sales WHERE gender = 'F'
+        GROUP BY TO_CHAR(rdate,'yyyy-mm')
+        ORDER BY TO_CHAR(rdate,'yyyy-mm')
+    </select>
+
+    <select id="Msum" resultType="Integer">
+        SELECT SUM(price) FROM sales WHERE gender = 'M'
+    </select>
+
+    <select id="Fsum" resultType="Integer">
+        SELECT SUM(price) FROM sales WHERE gender = 'F'
+    </select>
+
+    <select id="AverageByGender" resultType="Integer">
+        SELECT SUM(price)
+        FROM sales
+        GROUP BY TO_CHAR(rdate,'yyyy-mm')
+        ORDER BY TO_CHAR(rdate,'yyyy-mm')
+    </select>
+
+
 </mapper>

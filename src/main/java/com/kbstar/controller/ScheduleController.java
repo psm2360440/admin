@@ -41,13 +41,13 @@ public class ScheduleController {
 //        log.info(num+"");
     }
 
-    @Scheduled(cron = "*/2 * * * * *")
-    public void countCartUpdate() throws Exception{
-//        int num = 0;
-        int num2 = 0;
-//        num = cartService.countCart();
-        num2 = cartService.countPrice();
-
-        log.info(num2+"");
-    }
+//    @Scheduled(cron = "*/2 * * * * *")
+//    public void countCartUpdate() throws Exception{
+////        int num = 0;
+//        int num2 = 0;
+////        num = cartService.countCart();
+//        num2 = cartService.countPrice();
+//
+//        log.info(num2+"");
+//    }
 }
