@@ -191,6 +191,20 @@
         </li>
         <c:if test = "${loginadm != null}">
             <li class="nav-item">
+                <a class="nav-link" href="/chatbot">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                <span>Chatbot</span></a>
+            </li>
+        </c:if>
+        <c:if test = "${loginadm != null}">
+            <li class="nav-item">
+                <a class="nav-link" href="/callcenter">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Call center</span></a>
+            </li>
+        </c:if>
+        <c:if test = "${loginadm != null}">
+            <li class="nav-item">
                 <a class="nav-link" href="/websocket">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Web Socket</span></a>

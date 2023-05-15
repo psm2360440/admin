@@ -135,6 +135,20 @@ public class MainController {
         return "index";
     }
 
+    @RequestMapping("/chatbot")
+    public String chatbot(Model model){
+        model.addAttribute("adminserver", adminserver);
+        model.addAttribute("contents", "chatbot");
+        return "index";
+    }
+
+    @RequestMapping("/callcenter")
+    public String callcenter(Model model){
+        model.addAttribute("adminserver", adminserver);
+        model.addAttribute("contents", "callcenter");
+        return "index";
+    }
+
 
 //    @RequestMapping("/tables")
 //    public String tables(Model model){
